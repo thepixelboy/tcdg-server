@@ -11,35 +11,26 @@ function requireAuth(req: Request, res: Response, next: NextFunction): void {
   }
 
   res.status(403);
-  res.send('Not permited');
+  res.send('Not permitted');
 }
 
 const router = Router();
 
-router.get('/login', (req: Request, res: Response) => {
-  res.send(`
-    <form method="POST">
+router.get('/', (req: Request, res: Response) => {
+  if (req.session && req.session.loggedIn) {
+    res.send(`
       <div>
-        <label>Email</label>
-        <input name="email" type="text" />
+        <div>You are logged in</div>
+        <a href="/logout">Logout</a>
       </div>
-      <div>
-        <label>Password</label>
-        <input name="password" type="password" />
-      </div>
-      <button>Submit</button>
-    </form>
-  `);
-});
-
-router.post('/login', (req: RequestWithBody, res: Response) => {
-  const { email, password } = req.body;
-
-  if (email && password && email === 'hi@hi.com' && password === 'password') {
-    req.session = { loggedIn: true };
-    res.redirect('/');
+    `);
   } else {
-    res.send('Invalid email or password');
+    res.send(`
+      <div>
+        <div>You are not logged in</div>
+        <a href="/auth/login">Login</a>
+      </div>
+    `);
   }
 });
 
